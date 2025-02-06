@@ -4,10 +4,7 @@ package com.Abhijith.SpringBoot.Rest.Repo;
 import com.Abhijith.SpringBoot.Rest.model.JobPost;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class JobRepo {
@@ -102,7 +99,6 @@ public class JobRepo {
     }
 
 
-
     public JobPost getJob(int postId) {
         for (JobPost job : jobs) {
             if (job.getId() == postId) {
@@ -112,8 +108,8 @@ public class JobRepo {
         return null;
     }
 
-    public JobPost updateJob(JobPost jobPost) {
-        for (JobPost existingJob : jobs) {
+    public JobPost updateJob(JobPost jobPost, int id) {
+       /* for (JobPost existingJob : jobs) {
             if (existingJob.getId() == jobPost.getId()) {
                 // ✅ Update properties
                 existingJob.setPostProfile(jobPost.getPostProfile());
@@ -124,17 +120,55 @@ public class JobRepo {
             }
         }
         return null; // Or throw an exception if the job is not found
-    }
+    */
 
-    public void deleteJob(int postId){
-        for(JobPost jobPost:jobs){
-            if(jobPost.getId()==postId)
-            {
-                jobs.remove(jobPost);
-
+        for (JobPost job : jobs) {
+            if (job.getId() == id) {
+                job.setReqExperience(jobPost.getReqExperience());
             }
         }
+        return jobPost;
     }
 
 
+    public JobPost deleteJob(int postId) {
+        if (jobs.isEmpty()) {
+            System.out.println("Job list is empty.");
+            return null;
+        }
+
+        JobPost deletedJob = null;
+        Iterator<JobPost> iterator = jobs.iterator();
+
+        while (iterator.hasNext()) { // Iterate safely
+            JobPost jobPost = iterator.next(); // Get the next job
+
+            if (jobPost.getId() == postId) { // Check if ID matches
+                deletedJob = jobPost; // Store the job before deleting
+                iterator.remove(); // Remove safely
+                break; // Stop after first match
+            }
+        }
+
+        // Print result
+        if (deletedJob != null) {
+            System.out.println("Job with ID " + postId + " has been deleted: " + deletedJob.getPostProfile());
+        } else {
+            System.out.println("Job with ID " + postId + " not found.");
+        }
+
+        return deletedJob; // Return deleted job or null if not found
+    }
+
+
+    // Method to find JobPost by id
+    public JobPost findById(int id) {
+        // Loop through the list of JobPost objects
+        for (JobPost jobPost : jobs) {
+            if (jobPost.getId() == id) {
+                return jobPost;  // Return the job if found
+            }
+        }
+        return null;  // Return null if no job with the given id is found
+    }
 }

@@ -2,6 +2,8 @@ package com.Abhijith.SpringBoot.Rest;
 
 import com.Abhijith.SpringBoot.Rest.model.JobPost;
 import com.Abhijith.SpringBoot.Rest.service.JobService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,13 +32,35 @@ public class JobRestController {
         service.addJob(jobPost);
 
     }
-    @PutMapping("/jobPost/{id}")
-    public JobPost updateJob(@RequestBody JobPost jobPost) {
-        return service.updateJob(jobPost);
+    @PutMapping("/jobPostt/{id}")
+    public JobPost updateJob(@PathVariable("id") int id,@RequestBody JobPost jobPost) {
+
+        System.out.println("Function called with "+id);
+        return service.updateJob(jobPost,id);
+
     }
+
+
+
+
     @DeleteMapping("/jobPost/{id}")
-    public String deleteJob(@PathVariable int id){
-        service.deleteJob(id);
-        return "Deleted";
+    public ResponseEntity<String> deleteJob(@PathVariable int id) {
+        try {
+            JobPost deletedJob = service.deleteJob(id);
+
+            if (deletedJob != null) {
+                // Return a custom success message
+                return ResponseEntity.ok("Job post with ID " + id + " has been successfully deleted.");
+            } else {
+                // Return a custom "not found" message with a 404 status
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Job post with ID " + id + " does not exist.");
+            }
+        } catch (Exception e) {
+            // Return a custom error message in case of an unexpected issue
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something went wrong while deleting the job post. Please try again later.");
+        }
     }
+
 }
